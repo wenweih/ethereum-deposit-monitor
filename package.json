@@ -10,7 +10,7 @@
   "license": "MIT",
   "repository": "https://github.com/trusblock/smart_ethereum.git",
   "dependencies": {
-    "amqp": "^0.2.4",
+    "amqp": "^0.2.6",
     "commander": "^2.9.0",
     "q": "^1.4.1",
     "web3": "^0.15.1"

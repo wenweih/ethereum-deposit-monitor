@@ -24,7 +24,7 @@ connection.on('error', function(err){
 
 connection.on('ready', function(){
   console.log("READY FOR RABBITMQ CONNECTION");
-  var exc = connection.exchange('ethereum.exchange', options = { type: 'fanout', durable: true, autoDelete: false  }, function(exchange){
+  var exc = connection.exchange('ethereum.exchange', options = { type: 'fanout', durable: true, autoDelete: false, confirm: true  }, function(exchange){
     console.log('Echange' + exchange.name + "is open");
   });
 
@@ -40,7 +40,7 @@ connection.on('ready', function(){
       };
       console.log("hello" + payload.transactionHash);
       exc.publish('', JSON.stringify(message),{}, function(){
-        console.log("PUBLISHING");
+        console.log("message published");
       });
     });
   });

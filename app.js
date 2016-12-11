@@ -4,6 +4,7 @@ var tokenAbi = [{"constant":true,"inputs":[],"name":"name","outputs":[{"name":""
 
 var assets = {
   peb: { tokenAddr: "0x727c0302393cd59254e0b9abfa1b61bdc4e43cfb", key: "peb" },
+  sdc: { tokenAddr: "0xd80ebddb21804145cd8d0967fe94bc1297e4f8eb", key: "sdc" }
 }
 
 var fs = require('fs');
@@ -49,29 +50,44 @@ connection.on('ready', function(){
 
   for(var token_key in assets){
     if(token_key != undefined){
-      var contractsList = loadTokenContractsList(token_key);
-      tokenContract.at(assets[token_key].tokenAddr).Transfer().watch(function(err, payload) {
-        addr = contractsList.find(function(addr){
-          return addr == payload.args.to
-        });
-
-        if(addr){
-          message = {
-            txid: payload.transactionHash,
-            amount: payload.args.value,
-            address: payload.args.to,
-            asset_key: assets[token_key].key
-          };
-          console.log(token_key + " transaction: " + payload.transactionHash);
-          exc.publish('', JSON.stringify(message), {}, function(){
-            console.log(token_key + " transaction message published");
-          });
-        }
-      });
+      switch(token_key){
+        case "peb":
+          var peb_contractsList = loadTokenContractsList(token_key);
+          depositWatch(peb_contractsList, token_key, exc);
+          break;
+        case "sdc":
+          var sdc_contractsList = loadTokenContractsList(token_key);
+          depositWatch(sdc_contractsList, token_key, exc);
+          break;
+        case "cfc":
+          var cfc_contractsList = loadTokenContractsList(token_key);
+          depositWatch(cfc_contractsList, token_key, exc);
+          break;
+      }
     }
   }
 
 });
+
+function depositWatch(tokensList, token, exc){
+  tokenContract.at(assets[token].tokenAddr).Transfer().watch(function(err, payload) {
+    addr = tokensList.find(function(addr){
+      return addr == payload.args.to
+    });
+    if(addr){
+      message = {
+        txid: payload.transactionHash,
+        amount: payload.args.value,
+        address: payload.args.to,
+        asset_key: assets[token].key
+      };
+      console.log(token + " transaction: " + payload.transactionHash);
+      exc.publish('', JSON.stringify(message), {}, function(){
+        console.log(token + " transaction message published");
+      });
+    }
+  });
+}
 
 function loadTokenContractsList(token){
   var token_file = "contracts/" + token + ".csv";

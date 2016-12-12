@@ -1,0 +1,14 @@
+[Unit]
+Description=Ethereum token deposit monitor script
+After=network.target
+
+[Service]
+User=trusblock
+WorkingDirectory=/home/username/ethereum-deposit-monitor
+ExecStart=/usr/bin/nodejs app.js
+Restart=always
+RestartSec=500ms
+StartLimitInterval=0
+
+[Install]
+WantedBy=multi-user.target
